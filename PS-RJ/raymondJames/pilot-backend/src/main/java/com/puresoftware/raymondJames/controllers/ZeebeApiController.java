@@ -3,6 +3,7 @@ package com.puresoftware.raymondJames.controllers;
 import java.io.IOException;
 
 import com.puresoftware.raymondJames.pojo.AssignZeebeDetails;
+import com.puresoftware.raymondJames.pojo.UpdateZeebeDetails;
 import com.puresoftware.raymondJames.pojo.ZeebeTaskDetails;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -39,8 +40,9 @@ public class ZeebeApiController {
 
 	/* Api for update few details for mentioned taskId */
 	@PatchMapping("/update/{taskId}")
-	public ResponseEntity<String> updateZeebeTask(@PathVariable String taskId, @RequestBody String variableJson) throws IOException{
-		return zeebeApiImpl.updateZeebeTask(taskId, variableJson);
+	public ZeebeTaskDetails.ZeebeTaskResponse updateZeebeTask(@PathVariable String taskId, @RequestBody UpdateZeebeDetails.UpdateZeebeRequest updateZeebeRequest) throws IOException{
+		ZeebeTaskDetails.ZeebeTaskResponse response = zeebeApiImpl.updateZeebeTask(taskId, updateZeebeRequest);
+		return ResponseEntity.ok().body(response).getBody();
 	}
 
 	/* Api for complete task to user for mentioned taskId */

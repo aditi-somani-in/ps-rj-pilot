@@ -3,6 +3,7 @@ package com.puresoftware.raymondJames.implementation;
 import com.puresoftware.raymondJames.config.BearerTokenGeneratorConfig;
 import com.puresoftware.raymondJames.pojo.AssignZeebeDetails;
 import com.puresoftware.raymondJames.pojo.TaskListVariableDetails;
+import com.puresoftware.raymondJames.pojo.UpdateZeebeDetails;
 import com.puresoftware.raymondJames.pojo.ZeebeTaskDetails;
 import com.puresoftware.raymondJames.service.ZeebeApiService;
 import com.puresoftware.raymondJames.config.HeaderConfig;
@@ -132,24 +133,38 @@ public class ZeebeApiImpl implements ZeebeApiService {
 
 	@Override
 	@SneakyThrows
-	public ResponseEntity<String> updateZeebeTask(String taskId, String variableJson) {
-		logger.debug("Service for Update Zeebe User Task..!!");
-		JSONObject responseObj = new JSONObject();
+	public ZeebeTaskDetails.ZeebeTaskResponse updateZeebeTask(String taskId, UpdateZeebeDetails.UpdateZeebeRequest updateZeebeRequest) {
+		/*TODO: Need to create pojo for the request*/
+		logger.debug("Service for Assign Zeebe User Task..!!");
+
 		ZeebeTaskDetails.ZeebeTaskResponse zeebeTaskResponse = new ZeebeTaskDetails.ZeebeTaskResponse();
+
 		String updateZeebeTaskUrl = zeebeApiUrl + zeebeVersion + taskId;
+
 		HttpHeaders headers = headerConfig.addHeadersValue();
-		HttpEntity<String> entity = new HttpEntity(variableJson, headers);
-		ResponseEntity<String> response = null;
+		HttpEntity<String> entity = new HttpEntity(updateZeebeRequest, headers);
+
 		try {
-			response = restTemplate.exchange(updateZeebeTaskUrl, HttpMethod.PATCH, entity, String.class);
+
+			if (zeebeTaskResponse.getAssignee() != null) {
+
+				ResponseEntity<String> response = restTemplate.exchange(updateZeebeTaskUrl, HttpMethod.PATCH, entity, String.class);
+			} else {
+
+				/*TODO: Need to include http status as bad request */
+				zeebeTaskResponse.setMessage("Task id: " + taskId + " failed to update..!!");
+			}
+
 		} catch (Exception ex) {
 			logger.error(ex.toString());
-			new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+			zeebeTaskResponse.setMessage(ex.getMessage());
 		}
+
 		zeebeTaskResponse.setMessage(UPDATED);
-	//	responseObj = responseConfig.ResponseOutput(zeebeVariablesResponse.jsonObject, response, "TransactionId", zeebeVariablesResponse.getMessage());
-		return new ResponseEntity<>(responseObj.toString(), HttpStatus.OK);
+		return zeebeTaskResponse;
 	}
+
+
 
 	// Zeebe Api for Complete User Task
 	@Override

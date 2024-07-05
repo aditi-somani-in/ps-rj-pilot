@@ -20,8 +20,4 @@ public class AssignZeebeDetails {
         String action;
 
     }
-
-    public static class AssignZeebeResponse {
-
-    }
 }

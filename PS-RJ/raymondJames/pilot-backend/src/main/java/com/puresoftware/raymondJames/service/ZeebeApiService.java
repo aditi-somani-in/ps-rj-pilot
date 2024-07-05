@@ -1,6 +1,7 @@
 package com.puresoftware.raymondJames.service;
 
 import com.puresoftware.raymondJames.pojo.AssignZeebeDetails;
+import com.puresoftware.raymondJames.pojo.UpdateZeebeDetails;
 import com.puresoftware.raymondJames.pojo.ZeebeTaskDetails;
 import org.springframework.http.ResponseEntity;
 
@@ -10,7 +11,7 @@ public interface ZeebeApiService {
 
     ZeebeTaskDetails.ZeebeTaskResponse unAssignZeebeTask(String taskId);
 
-    ResponseEntity<String> updateZeebeTask(String taskId, String variableJson);
+    ZeebeTaskDetails.ZeebeTaskResponse updateZeebeTask(String taskId, UpdateZeebeDetails.UpdateZeebeRequest updateZeebeRequest);
 
     ResponseEntity<String> completeZeebeTask(String taskId, String variableJson);
 
