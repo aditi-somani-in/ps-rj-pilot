@@ -15,8 +15,8 @@ public class GlobalUtils {
         public static final String COMPLETED_1 ="Task is Already Assigned or Completed";
         public static final String UN_ASSIGNED_SUCCESSFULLY ="Task UnAssigned successfully";
         public static final String UPDATED ="Task Updated successfully";
-        public static final String COMPLETED ="COMPLETE";
-        public static final String CREATED ="CREATED";
+        public static final String COMPLETED ="COMPLETED";
+        public static final String ASSIGNED ="ASSIGNED";
         public static final String COMPLETED_SUCCESSFULLY ="Task Completed successfully";
         public static final String ERROR ="Please check task is already completed or mentioned taskId is not correct";
     }
