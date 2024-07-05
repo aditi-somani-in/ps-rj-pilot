@@ -98,11 +98,12 @@ public class ZeebeApiImpl implements ZeebeApiService {
 		ZeebeVariableDetails.ZeebeVariablesResponse zeebeVariablesResponse = new ZeebeVariableDetails.ZeebeVariablesResponse();
 		String unAssignZeebeTaskUrl = zeebeApiUrl + zeebeVersion + taskId + "/assignee";
 
-		TaskListVariableDetails.TaskListVariableResponse strings = tasklistApiImpl.getTask(taskId);
+		TaskListVariableDetails.TaskListVariableResponse getTaskJson = tasklistApiImpl.getTask(taskId);
 
-		for(int i=0;i<strings.toString().length();i++){
-			zeebeVariablesResponse.setAssignee(strings.getAssignee());
-			zeebeVariablesResponse.setTaskState(strings.getTaskState());
+		for(int i = 0; i < getTaskJson.toString().length(); i++){
+
+			zeebeVariablesResponse.setAssignee(getTaskJson.getAssignee());
+			zeebeVariablesResponse.setTaskState(getTaskJson.getTaskState());
 		}
 
 		HttpHeaders headers = headerConfig.addHeadersValue();
