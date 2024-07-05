@@ -18,6 +18,7 @@ import org.springframework.web.client.RestTemplate;
 
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -113,7 +114,6 @@ public class ZeebeApiImpl implements ZeebeApiService {
 			if (zeebeVariablesResponse.getAssignee() != null)
 			{
 				ResponseEntity<String> response = restTemplate.exchange(unAssignZeebeTaskUrl, HttpMethod.DELETE, entity, String.class);
-				zeebeVariablesResponse.setMessage("Task id: "+taskId+ " has status " + getTaskJson.getTaskState());
 			}
 			/*TODO: Re-iterate the logic*/
 			else if (getTaskJson.getTaskState().equals(COMPLETED) || getTaskJson.getTaskState().equals(ASSIGNED)) {
@@ -125,8 +125,8 @@ public class ZeebeApiImpl implements ZeebeApiService {
 			logger.error(ex.toString());
 			zeebeVariablesResponse.setMessage(ex.getMessage());
 		}
-		/*TODO: set message rather than creating un-assigned task*/
-		zeebeVariablesResponse.setMessage(UN_ASSIGNED_SUCCESSFULLY);
+
+		zeebeVariablesResponse.setMessage(SUCCESS + " Task assigned successfully!!!");
 		return zeebeVariablesResponse;
 	}
 

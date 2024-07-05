@@ -18,6 +18,8 @@ public class ZeebeVariableDetails {
         @Setter
         public String taskState;
 
+        /*TODO: not sure if we need below two*/
+
         @Getter
         @Setter
         public JSONObject jsonObject;
