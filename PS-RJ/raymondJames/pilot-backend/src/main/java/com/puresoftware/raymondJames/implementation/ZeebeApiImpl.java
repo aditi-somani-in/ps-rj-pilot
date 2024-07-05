@@ -111,11 +111,10 @@ public class ZeebeApiImpl implements ZeebeApiService {
 		HttpEntity<String> entity = new HttpEntity(headers);
 		try {
 
-			if (zeebeVariablesResponse.getAssignee() != null)
-			{
-				ResponseEntity<String> response = restTemplate.exchange(unAssignZeebeTaskUrl, HttpMethod.DELETE, entity, String.class);
+			if (zeebeVariablesResponse.getAssignee() != null) {
+				ResponseEntity<String> response  = restTemplate.exchange(unAssignZeebeTaskUrl, HttpMethod.DELETE, entity, String.class);
 			}
-			/*TODO: Re-iterate the logic*/
+
 			else if (getTaskJson.getTaskState().equals(COMPLETED) || getTaskJson.getTaskState().equals(ASSIGNED)) {
 				/*TODO: Need to include http status as bad request */
 				zeebeVariablesResponse.setMessage("Task id: "+taskId+ " has status " + getTaskJson.getTaskState());
@@ -126,7 +125,7 @@ public class ZeebeApiImpl implements ZeebeApiService {
 			zeebeVariablesResponse.setMessage(ex.getMessage());
 		}
 
-		zeebeVariablesResponse.setMessage(SUCCESS + " Task assigned successfully!!!");
+		zeebeVariablesResponse.setMessage(SUCCESS);
 		return zeebeVariablesResponse;
 	}
 
