@@ -2,13 +2,9 @@ package com.puresoftware.raymondJames.controllers;
 
 import java.io.IOException;
 
-import com.puresoftware.raymondJames.pojo.TaskListVariableDetails;
-import com.puresoftware.raymondJames.pojo.ZeebeVariableDetails;
-import io.camunda.zeebe.client.impl.http.ApiEntity;
-import io.netty.handler.codec.http.HttpResponse;
-import org.json.HTTP;
+import com.puresoftware.raymondJames.pojo.AssignZeebeDetails;
+import com.puresoftware.raymondJames.pojo.ZeebeTaskDetails;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.puresoftware.raymondJames.implementation.ZeebeApiImpl;
@@ -29,14 +25,15 @@ public class ZeebeApiController {
 
 	/* Api for assign zeebe task to user for mentioned taskId */
 	@PostMapping("/assign/{taskId}")
-	public ResponseEntity<String> assignZeebeTask(@PathVariable String taskId, @RequestBody String variableJson) throws Exception {
-		return zeebeApiImpl.assignZeebeTask(taskId, variableJson);
+	public ZeebeTaskDetails.ZeebeTaskResponse assignZeebeTask(@PathVariable String taskId, @RequestBody AssignZeebeDetails.AssignZeebeRequest assignZeebeRequest) throws Exception {
+		ZeebeTaskDetails.ZeebeTaskResponse response = zeebeApiImpl.assignZeebeTask(taskId,assignZeebeRequest);
+		return zeebeApiImpl.assignZeebeTask(taskId, assignZeebeRequest);
 	}
 
 	/* Api for unassign zeebe task to user for mentioned taskId */
 	@DeleteMapping("/un-assign/{taskId}")
-	public ZeebeVariableDetails.ZeebeVariablesResponse unAssignZeebeTask(@PathVariable String taskId) throws IOException{
-		ZeebeVariableDetails.ZeebeVariablesResponse response = zeebeApiImpl.unAssignZeebeTask(taskId);
+	public ZeebeTaskDetails.ZeebeTaskResponse unAssignZeebeTask(@PathVariable String taskId) throws IOException{
+		 ZeebeTaskDetails.ZeebeTaskResponse response = zeebeApiImpl.unAssignZeebeTask(taskId);
 		 return ResponseEntity.ok().body(response).getBody();
 	}
 

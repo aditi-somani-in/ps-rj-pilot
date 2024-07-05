@@ -1,15 +1,14 @@
 package com.puresoftware.raymondJames.service;
 
-import com.puresoftware.raymondJames.implementation.TasklistApiImpl;
-import com.puresoftware.raymondJames.pojo.TaskListVariableDetails;
-import com.puresoftware.raymondJames.pojo.ZeebeVariableDetails;
+import com.puresoftware.raymondJames.pojo.AssignZeebeDetails;
+import com.puresoftware.raymondJames.pojo.ZeebeTaskDetails;
 import org.springframework.http.ResponseEntity;
 
 public interface ZeebeApiService {
 
-    ResponseEntity<String> assignZeebeTask(String taskId, String variableJson);
+    ZeebeTaskDetails.ZeebeTaskResponse assignZeebeTask(String taskId, AssignZeebeDetails.AssignZeebeRequest assignZeebeRequest);
 
-    ZeebeVariableDetails.ZeebeVariablesResponse unAssignZeebeTask(String taskId);
+    ZeebeTaskDetails.ZeebeTaskResponse unAssignZeebeTask(String taskId);
 
     ResponseEntity<String> updateZeebeTask(String taskId, String variableJson);
 

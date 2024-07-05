@@ -1,9 +1,9 @@
 package com.puresoftware.raymondJames.implementation;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.puresoftware.raymondJames.config.BearerTokenGeneratorConfig;
+import com.puresoftware.raymondJames.pojo.AssignZeebeDetails;
 import com.puresoftware.raymondJames.pojo.TaskListVariableDetails;
-import com.puresoftware.raymondJames.pojo.ZeebeVariableDetails;
+import com.puresoftware.raymondJames.pojo.ZeebeTaskDetails;
 import com.puresoftware.raymondJames.service.ZeebeApiService;
 import com.puresoftware.raymondJames.config.HeaderConfig;
 import lombok.SneakyThrows;
@@ -18,10 +18,6 @@ import org.springframework.web.client.RestTemplate;
 
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 
 import static com.puresoftware.raymondJames.utils.GlobalUtils.GlobalZeebeUtils.*;
 
@@ -52,82 +48,90 @@ public class ZeebeApiImpl implements ZeebeApiService {
 	@Autowired
 	TasklistApiImpl tasklistApiImpl;
 
-	// Zeebe Api for Assign User Task
+
 	@Override
 	@SneakyThrows
-	public ResponseEntity<String> assignZeebeTask(String taskId, String variableJson)  {
+	public ZeebeTaskDetails.ZeebeTaskResponse assignZeebeTask(String taskId, AssignZeebeDetails.AssignZeebeRequest assignZeebeRequest) {
+
 		logger.debug("Service for Assign Zeebe User Task..!!");
-		JSONObject responseObj =  new JSONObject();
-		ObjectMapper mapper = new ObjectMapper();
-		ZeebeVariableDetails.ZeebeVariablesResponse zeebeVariablesResponse = new ZeebeVariableDetails.ZeebeVariablesResponse();
+
+		ZeebeTaskDetails.ZeebeTaskResponse zeebeTaskResponse = new ZeebeTaskDetails.ZeebeTaskResponse();
+
 		String assignZeebeTaskUrl = zeebeApiUrl + zeebeVersion + taskId + "/assignment";
-		//zeebeVariablesResponse.setTaskDetails(tasklistApiImpl.getTask(taskId));
-		zeebeVariablesResponse.jsonObject = new JSONObject(zeebeVariablesResponse.taskDetails.getBody());
-		zeebeVariablesResponse.setAssignee(zeebeVariablesResponse.jsonObject.get("assignee").toString());
-		zeebeVariablesResponse.setTaskState(zeebeVariablesResponse.jsonObject.get("taskState").toString());
+
+		TaskListVariableDetails.TaskListVariableResponse getTaskJson = tasklistApiImpl.getTask(taskId);
+
 		HttpHeaders headers = headerConfig.addHeadersValue();
-		HttpEntity<String> entity = new HttpEntity(variableJson, headers);
-		ResponseEntity<String> response= null;
-		HashMap<String, String> mapResponse = new HashMap<>();
+
+		HttpEntity<String> entity = new HttpEntity(assignZeebeRequest, headers);
+
+		for (int i = 0; i < assignZeebeRequest.getAssignee().length(); i++){
+
+			zeebeTaskResponse.setAssignee(assignZeebeRequest.getAssignee());
+		}
+
 		try {
-			if(zeebeVariablesResponse.getAssignee().equals("null")) {
-				response = restTemplate.exchange(assignZeebeTaskUrl, HttpMethod.POST, entity, String.class);
+
+			if (zeebeTaskResponse.getAssignee() != null) {
+
+				ResponseEntity<String> response = restTemplate.exchange(assignZeebeTaskUrl, HttpMethod.POST, entity, String.class);
+
+			} else if (getTaskJson.getTaskState().equals(ASSIGNED)) {
+				/*TODO: Need to include http status as bad request */
+				zeebeTaskResponse.setMessage("Task id: " + taskId + " has status " + getTaskJson.getTaskState());
 			}
-			else{
-				zeebeVariablesResponse.setMessage(ALREADY_ASSIGNED + zeebeVariablesResponse.getAssignee());
-				return new ResponseEntity<>(zeebeVariablesResponse.getMessage(), HttpStatus.BAD_REQUEST);
-			}
+
 		} catch (Exception ex) {
 			logger.error(ex.toString());
-			//responseObj = responseConfig.ResponseOutput(zeebeVariablesResponse.jsonObject, response, "TransactionId", ex.getMessage().toString());
-			return new ResponseEntity<>(ex.getMessage(),HttpStatus.BAD_REQUEST);
+			zeebeTaskResponse.setMessage(ex.getMessage());
 		}
-		zeebeVariablesResponse.setMessage(ASSIGNEDSUCCESS);
-		//responseObj =  zeebeVariablesResponse.jsonObject, response, "TransactionId", zeebeVariablesResponse.getMessage());
-		return new ResponseEntity<>(responseObj.toString(), HttpStatus.OK);
+
+		zeebeTaskResponse.setMessage(SUCCESS);
+		return zeebeTaskResponse;
 	}
 
 
 
-	// Zeebe Api for UnAssign User Task
 	@Override
 	@SneakyThrows
-	public ZeebeVariableDetails.ZeebeVariablesResponse unAssignZeebeTask(String taskId) {
+	public ZeebeTaskDetails.ZeebeTaskResponse unAssignZeebeTask(String taskId) {
 
 		logger.debug("Service for UnAssign Zeebe User Task..!!");
 
-		ZeebeVariableDetails.ZeebeVariablesResponse zeebeVariablesResponse = new ZeebeVariableDetails.ZeebeVariablesResponse();
+		ZeebeTaskDetails.ZeebeTaskResponse zeebeTaskResponse = new ZeebeTaskDetails.ZeebeTaskResponse();
 		String unAssignZeebeTaskUrl = zeebeApiUrl + zeebeVersion + taskId + "/assignee";
 
 		TaskListVariableDetails.TaskListVariableResponse getTaskJson = tasklistApiImpl.getTask(taskId);
 
 		for(int i = 0; i < getTaskJson.toString().length(); i++){
 
-			zeebeVariablesResponse.setAssignee(getTaskJson.getAssignee());
-			zeebeVariablesResponse.setTaskState(getTaskJson.getTaskState());
+			zeebeTaskResponse.setAssignee(getTaskJson.getAssignee());
+			zeebeTaskResponse.setTaskState(getTaskJson.getTaskState());
 		}
 
 		HttpHeaders headers = headerConfig.addHeadersValue();
 		HttpEntity<String> entity = new HttpEntity(headers);
 		try {
 
-			if (zeebeVariablesResponse.getAssignee() != null) {
+			if (zeebeTaskResponse.getAssignee() != null) {
 				ResponseEntity<String> response  = restTemplate.exchange(unAssignZeebeTaskUrl, HttpMethod.DELETE, entity, String.class);
 			}
 
 			else if (getTaskJson.getTaskState().equals(COMPLETED) || getTaskJson.getTaskState().equals(ASSIGNED)) {
 				/*TODO: Need to include http status as bad request */
-				zeebeVariablesResponse.setMessage("Task id: "+taskId+ " has status " + getTaskJson.getTaskState());
+				zeebeTaskResponse.setMessage("Task id: "+taskId+ " has status " + getTaskJson.getTaskState());
 			}
 
 		} catch (Exception ex) {
 			logger.error(ex.toString());
-			zeebeVariablesResponse.setMessage(ex.getMessage());
+			zeebeTaskResponse.setMessage(ex.getMessage());
 		}
 
-		zeebeVariablesResponse.setMessage(SUCCESS);
-		return zeebeVariablesResponse;
+		zeebeTaskResponse.setMessage(SUCCESS);
+		return zeebeTaskResponse;
 	}
+
+
 
 	// Zeebe Api for Update User Task
 	@Override
@@ -135,7 +139,7 @@ public class ZeebeApiImpl implements ZeebeApiService {
 	public ResponseEntity<String> updateZeebeTask(String taskId, String variableJson) {
 		logger.debug("Service for Update Zeebe User Task..!!");
 		JSONObject responseObj = new JSONObject();
-		ZeebeVariableDetails.ZeebeVariablesResponse zeebeVariablesResponse = new ZeebeVariableDetails.ZeebeVariablesResponse();
+		ZeebeTaskDetails.ZeebeTaskResponse zeebeTaskResponse = new ZeebeTaskDetails.ZeebeTaskResponse();
 		String updateZeebeTaskUrl = zeebeApiUrl + zeebeVersion + taskId;
 		HttpHeaders headers = headerConfig.addHeadersValue();
 		HttpEntity<String> entity = new HttpEntity(variableJson, headers);
@@ -146,7 +150,7 @@ public class ZeebeApiImpl implements ZeebeApiService {
 			logger.error(ex.toString());
 			new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
 		}
-		zeebeVariablesResponse.setMessage(UPDATED);
+		zeebeTaskResponse.setMessage(UPDATED);
 	//	responseObj = responseConfig.ResponseOutput(zeebeVariablesResponse.jsonObject, response, "TransactionId", zeebeVariablesResponse.getMessage());
 		return new ResponseEntity<>(responseObj.toString(), HttpStatus.OK);
 	}
@@ -157,7 +161,7 @@ public class ZeebeApiImpl implements ZeebeApiService {
 	public ResponseEntity<String> completeZeebeTask(String taskId, String variableJson) {
 		logger.debug("Service for Complete Zeebe User Task..!!");
 		JSONObject responseObj = new JSONObject();
-		ZeebeVariableDetails.ZeebeVariablesResponse zeebeVariablesResponse = new ZeebeVariableDetails.ZeebeVariablesResponse();
+		ZeebeTaskDetails.ZeebeTaskResponse zeebeTaskResponse = new ZeebeTaskDetails.ZeebeTaskResponse();
 		String completeZeebeTaskUrl = zeebeApiUrl + zeebeVersion + taskId + "/completion";
 		HttpHeaders headers = headerConfig.addHeadersValue();
 		HttpEntity<String> entity = new HttpEntity(variableJson, headers);
@@ -168,7 +172,7 @@ public class ZeebeApiImpl implements ZeebeApiService {
 			logger.error(ex.toString());
 			return new ResponseEntity<>(ERROR, HttpStatus.BAD_REQUEST);
 		}
-		zeebeVariablesResponse.setMessage(COMPLETED_SUCCESSFULLY);
+		zeebeTaskResponse.setMessage(COMPLETED_SUCCESSFULLY);
 		//responseObj = responseConfig.ResponseOutput(zeebeVariablesResponse.jsonObject, response, "TransactionId", zeebeVariablesResponse.getMessage());
 		return new ResponseEntity<>(responseObj.toString(), HttpStatus.OK);
 	}
