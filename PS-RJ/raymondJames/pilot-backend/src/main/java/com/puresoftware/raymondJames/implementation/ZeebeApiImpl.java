@@ -112,6 +112,7 @@ public class ZeebeApiImpl implements ZeebeApiService {
 			if (zeebeVariablesResponse.getAssignee() != null) {
 				ResponseEntity<String> response = restTemplate.exchange(unAssignZeebeTaskUrl, HttpMethod.DELETE, entity, String.class);
 			}
+			/*TODO: Re-iterate the logic*/
 			else if (zeebeVariablesResponse.getTaskState() != CREATED ) {
 				/*TODO: Need to include http status as bad request */
 				zeebeVariablesResponse.setMessage("Task id: "+taskId+ " has status " + zeebeVariablesResponse.getTaskState());
