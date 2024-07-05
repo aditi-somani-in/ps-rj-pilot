@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.util.HashMap;
 
 import static com.puresoftware.raymondJames.utils.GlobalUtils.*;
+import static com.puresoftware.raymondJames.utils.GlobalUtils.GlobalTasklistUtils.*;
 
 @Service
 @Slf4j
@@ -44,9 +45,6 @@ public class TasklistApiImpl implements TasklistApiService {
 
     @Autowired
     private HeaderConfig headerConfig;
-
-    @Autowired
-    ResponseConfig responseConfig;
 
     /*TODO: Need to check if rest template are required*/
 
@@ -128,10 +126,10 @@ public class TasklistApiImpl implements TasklistApiService {
         }catch(Exception ex){
             logger.error(ex.toString());
             taskListVariableResponse.setMessage(ERRORINVARIABLESEARCH);
-            responseObj = responseConfig.ResponseOutput(taskListVariableResponse.jsonResponse, response, "TransactionId", taskListVariableResponse.getMessage());
+            //responseObj = responseConfig.ResponseOutput(taskListVariableResponse.jsonResponse, response, "TransactionId", taskListVariableResponse.getMessage());
         }
         taskListVariableResponse.setMessage(VARIABLESEARCHDONE);
-        responseObj = responseConfig.ResponseOutput(taskListVariableResponse.jsonResponse, response, "TransactionId", taskListVariableResponse.getMessage());
+        //responseObj = responseConfig.ResponseOutput(taskListVariableResponse.jsonResponse, response, "TransactionId", taskListVariableResponse.getMessage());
         return response;
     }
 
@@ -151,10 +149,10 @@ public class TasklistApiImpl implements TasklistApiService {
         }catch(Exception ex){
             logger.error(ex.toString());
             taskListVariableResponse.setMessage(ERRORINDRAFTVARIABLE);
-            responseObj = responseConfig.ResponseOutput(taskListVariableResponse.jsonResponse, response, "TransactionId", taskListVariableResponse.getMessage());
+            //responseObj = responseConfig.ResponseOutput(taskListVariableResponse.jsonResponse, response, "TransactionId", taskListVariableResponse.getMessage());
         }
         taskListVariableResponse.setMessage(DRAFTVARIABLE);
-        responseObj = responseConfig.ResponseOutput(taskListVariableResponse.jsonResponse, response, "TransactionId", taskListVariableResponse.getMessage());
+        //responseObj = responseConfig.ResponseOutput(taskListVariableResponse.jsonResponse, response, "TransactionId", taskListVariableResponse.getMessage());
         return response;
     }
 }

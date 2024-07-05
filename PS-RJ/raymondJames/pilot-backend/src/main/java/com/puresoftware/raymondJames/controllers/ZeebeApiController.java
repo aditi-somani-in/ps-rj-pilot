@@ -1,6 +1,11 @@
 package com.puresoftware.raymondJames.controllers;
 
 import java.io.IOException;
+
+import com.puresoftware.raymondJames.pojo.ZeebeVariableDetails;
+import io.camunda.zeebe.client.impl.http.ApiEntity;
+import io.netty.handler.codec.http.HttpResponse;
+import org.json.HTTP;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,7 +20,7 @@ import com.puresoftware.raymondJames.implementation.ZeebeApiImpl;
 @RestController
 @ControllerAdvice
 @CrossOrigin(origins = "*") //Need to remove this before deploying this service
-@RequestMapping("/zeebeApi")
+@RequestMapping("/zeebe-api")
 public class ZeebeApiController {
 
 	@Autowired
@@ -28,9 +33,10 @@ public class ZeebeApiController {
 	}
 
 	/* Api for unassign zeebe task to user for mentioned taskId */
-	@DeleteMapping("/unAssign/{taskId}")
-	public ResponseEntity<String> unAssignZeebeTask(@PathVariable String taskId, @RequestBody String variableJson) throws IOException{
-		 return zeebeApiImpl.unAssignZeebeTask(taskId, variableJson);
+	@DeleteMapping("/un-assign/{taskId}")
+	public ZeebeVariableDetails.ZeebeVariablesResponse unAssignZeebeTask(@PathVariable String taskId, @RequestBody String variableJson) throws IOException{
+		ZeebeVariableDetails.ZeebeVariablesResponse response = zeebeApiImpl.unAssignZeebeTask(taskId, variableJson);
+		 return ResponseEntity.ok().body(response).getBody();
 	}
 
 	/* Api for update few details for mentioned taskId */

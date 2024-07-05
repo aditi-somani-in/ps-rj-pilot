@@ -7,7 +7,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 
 import static com.puresoftware.raymondJames.utils.BearerTokenUtils.*;
-import static com.puresoftware.raymondJames.utils.GlobalUtils.*;
+import static com.puresoftware.raymondJames.utils.GlobalUtils.GlobalUtilHeaders.*;
 
 @Service
 public class HeaderConfig {
