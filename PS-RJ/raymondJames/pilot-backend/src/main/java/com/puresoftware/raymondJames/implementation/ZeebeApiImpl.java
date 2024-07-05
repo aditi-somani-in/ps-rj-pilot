@@ -59,10 +59,7 @@ public class ZeebeApiImpl implements ZeebeApiService {
 
 		String assignZeebeTaskUrl = zeebeApiUrl + zeebeVersion + taskId + "/assignment";
 
-		TaskListVariableDetails.TaskListVariableResponse getTaskJson = tasklistApiImpl.getTask(taskId);
-
 		HttpHeaders headers = headerConfig.addHeadersValue();
-
 		HttpEntity<String> entity = new HttpEntity(assignZeebeRequest, headers);
 
 		for (int i = 0; i < assignZeebeRequest.getAssignee().length(); i++){
@@ -75,10 +72,10 @@ public class ZeebeApiImpl implements ZeebeApiService {
 			if (zeebeTaskResponse.getAssignee() != null) {
 
 				ResponseEntity<String> response = restTemplate.exchange(assignZeebeTaskUrl, HttpMethod.POST, entity, String.class);
+			} else {
 
-			} else if (getTaskJson.getTaskState().equals(ASSIGNED)) {
 				/*TODO: Need to include http status as bad request */
-				zeebeTaskResponse.setMessage("Task id: " + taskId + " has status " + getTaskJson.getTaskState());
+				zeebeTaskResponse.setMessage("Task id: " + taskId + " is already assigned..!!");
 			}
 
 		} catch (Exception ex) {
