@@ -28,6 +28,14 @@ public class TaskListVariableDetails {
         @Getter
         @Setter
         public String formId;
+
+        @Getter
+        @Setter
+        String assignee;
+
+        @Getter
+                @Setter
+        String taskState;
     }
 
 }

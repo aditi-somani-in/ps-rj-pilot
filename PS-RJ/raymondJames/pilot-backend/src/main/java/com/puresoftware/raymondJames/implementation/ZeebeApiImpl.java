@@ -2,6 +2,7 @@ package com.puresoftware.raymondJames.implementation;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.puresoftware.raymondJames.config.BearerTokenGeneratorConfig;
+import com.puresoftware.raymondJames.pojo.TaskListVariableDetails;
 import com.puresoftware.raymondJames.pojo.ZeebeVariableDetails;
 import com.puresoftware.raymondJames.service.ZeebeApiService;
 import com.puresoftware.raymondJames.config.HeaderConfig;
@@ -57,7 +58,7 @@ public class ZeebeApiImpl implements ZeebeApiService {
 		ObjectMapper mapper = new ObjectMapper();
 		ZeebeVariableDetails.ZeebeVariablesResponse zeebeVariablesResponse = new ZeebeVariableDetails.ZeebeVariablesResponse();
 		String assignZeebeTaskUrl = zeebeApiUrl + zeebeVersion + taskId + "/assignment";
-		zeebeVariablesResponse.setTaskDetails(tasklistApiImpl.getTask(taskId));
+		//zeebeVariablesResponse.setTaskDetails(tasklistApiImpl.getTask(taskId));
 		zeebeVariablesResponse.jsonObject = new JSONObject(zeebeVariablesResponse.taskDetails.getBody());
 		zeebeVariablesResponse.setAssignee(zeebeVariablesResponse.jsonObject.get("assignee").toString());
 		zeebeVariablesResponse.setTaskState(zeebeVariablesResponse.jsonObject.get("taskState").toString());
@@ -88,26 +89,26 @@ public class ZeebeApiImpl implements ZeebeApiService {
 	// Zeebe Api for UnAssign User Task
 	@Override
 	@SneakyThrows
-	public ZeebeVariableDetails.ZeebeVariablesResponse unAssignZeebeTask(String taskId, String variableJson) {
+	public ZeebeVariableDetails.ZeebeVariablesResponse unAssignZeebeTask(String taskId, TaskListVariableDetails.TaskListVariableResponse taskListVariableResponse) {
 
 		logger.debug("Service for UnAssign Zeebe User Task..!!");
 
 		ZeebeVariableDetails.ZeebeVariablesResponse zeebeVariablesResponse = new ZeebeVariableDetails.ZeebeVariablesResponse();
 		String unAssignZeebeTaskUrl = zeebeApiUrl + zeebeVersion + taskId + "/assignee";
-		zeebeVariablesResponse.setTaskDetails(tasklistApiImpl.getTask(taskId));
-		zeebeVariablesResponse.jsonObject = new JSONObject(zeebeVariablesResponse.taskDetails.getBody());
-		zeebeVariablesResponse.setAssignee(zeebeVariablesResponse.jsonObject.get("assignee").toString());
-		zeebeVariablesResponse.setTaskState(zeebeVariablesResponse.jsonObject.get("taskState").toString());
+		/* TODO: My loop should not run twice and hence should be called once by the gettask method*/
+		zeebeVariablesResponse.setAssignee(tasklistApiImpl.getTask(taskId).getAssignee());
+		zeebeVariablesResponse.setTaskState(tasklistApiImpl.getTask(taskId).getTaskState());
 		HttpHeaders headers = headerConfig.addHeadersValue();
-		HttpEntity<String> entity = new HttpEntity(variableJson, headers);
-		ResponseEntity<String> response = null;
+		HttpEntity<String> entity = new HttpEntity(taskListVariableResponse, headers);
 		try {
-			if(!zeebeVariablesResponse.getAssignee().equals("null")) {
-				response = restTemplate.exchange(unAssignZeebeTaskUrl, HttpMethod.DELETE, entity, String.class);
+			if(zeebeVariablesResponse.getAssignee() != null) {
+				ResponseEntity<String> response = restTemplate.exchange(unAssignZeebeTaskUrl, HttpMethod.DELETE, entity, String.class);
+			}else if (zeebeVariablesResponse.getTaskState().equals(COMPLETED_SUCCESSFULLY)) {
+				zeebeVariablesResponse.setMessage(COMPLETED_SUCCESSFULLY);
 			}else{
 				zeebeVariablesResponse.setMessage(COMPLETED);
-				return ResponseEntity.badRequest().body(zeebeVariablesResponse).getBody();
 			}
+			return ResponseEntity.badRequest().body(zeebeVariablesResponse).getBody();
 		} catch (Exception ex) {
 			logger.error(ex.toString());
 			zeebeVariablesResponse.setMessage(ex.getMessage());

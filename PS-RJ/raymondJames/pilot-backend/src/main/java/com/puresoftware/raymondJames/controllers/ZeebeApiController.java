@@ -2,6 +2,7 @@ package com.puresoftware.raymondJames.controllers;
 
 import java.io.IOException;
 
+import com.puresoftware.raymondJames.pojo.TaskListVariableDetails;
 import com.puresoftware.raymondJames.pojo.ZeebeVariableDetails;
 import io.camunda.zeebe.client.impl.http.ApiEntity;
 import io.netty.handler.codec.http.HttpResponse;
@@ -34,8 +35,8 @@ public class ZeebeApiController {
 
 	/* Api for unassign zeebe task to user for mentioned taskId */
 	@DeleteMapping("/un-assign/{taskId}")
-	public ZeebeVariableDetails.ZeebeVariablesResponse unAssignZeebeTask(@PathVariable String taskId, @RequestBody String variableJson) throws IOException{
-		ZeebeVariableDetails.ZeebeVariablesResponse response = zeebeApiImpl.unAssignZeebeTask(taskId, variableJson);
+	public ZeebeVariableDetails.ZeebeVariablesResponse unAssignZeebeTask(@PathVariable String taskId, @RequestBody TaskListVariableDetails.TaskListVariableResponse taskListVariableResponse) throws IOException{
+		ZeebeVariableDetails.ZeebeVariablesResponse response = zeebeApiImpl.unAssignZeebeTask(taskId, taskListVariableResponse);
 		 return ResponseEntity.ok().body(response).getBody();
 	}
 

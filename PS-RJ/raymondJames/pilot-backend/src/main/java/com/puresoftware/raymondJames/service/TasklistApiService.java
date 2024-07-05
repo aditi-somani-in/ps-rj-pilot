@@ -7,7 +7,7 @@ import java.util.HashMap;
 
 public interface TasklistApiService {
 
-    ResponseEntity<String> getTask(String taskId) throws IOException;
+    Object getTask(String taskId) throws IOException;
 
     HashMap<String, Object> getForm(String taskId);
 

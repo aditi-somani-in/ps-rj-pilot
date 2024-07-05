@@ -14,10 +14,8 @@ import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.io.IOException;
 import java.util.HashMap;
 
-import static com.puresoftware.raymondJames.utils.GlobalUtils.*;
 import static com.puresoftware.raymondJames.utils.GlobalUtils.GlobalTasklistUtils.*;
 
 @Service
@@ -51,21 +49,25 @@ public class TasklistApiImpl implements TasklistApiService {
     //For get task details using taskId
     @Override
     @SneakyThrows
-    public ResponseEntity<String> getTask(String taskId) throws IOException{
+    public TaskListVariableDetails.TaskListVariableResponse getTask(String taskId) {
+
         logger.debug("Service for GET A TASK FROM TASKLIST invoked..!!");
-        JSONObject responseObj = new JSONObject();
+
+        TaskListVariableDetails.TaskListVariableResponse taskListVariableResponse =
+                new TaskListVariableDetails.TaskListVariableResponse();
 
         String url = camundaApiUrl + taskVersion + taskId;
         HttpHeaders headers = headerConfig.addHeadersValue();
         HttpEntity<String> httpEntity = new HttpEntity(null, headers);
-        ResponseEntity<String> response = null;
         try {
-            response = restTemplate.exchange(url, HttpMethod.GET, httpEntity, String.class);
+            ResponseEntity<TaskListVariableDetails.TaskListVariableResponse> response = restTemplate.exchange(url, HttpMethod.GET, httpEntity, TaskListVariableDetails.TaskListVariableResponse.class);
+            taskListVariableResponse.setAssignee(response.getBody().getAssignee());
+            taskListVariableResponse.setTaskState(response.getBody().getTaskState());
         } catch (Exception ex) {
             logger.error(ex.toString());
-            return new ResponseEntity<>(responseObj.toString(), HttpStatus.BAD_REQUEST);
+            taskListVariableResponse.setMessage(ex.getMessage());
         }
-        return response;
+        return taskListVariableResponse;
     }
 
     //For get form details using taskId
@@ -74,7 +76,7 @@ public class TasklistApiImpl implements TasklistApiService {
     public HashMap<String, Object> getForm(String taskId) {
         logger.debug("Service for GET A FORM FROM TASKLIST invoked..!!");
         TaskListVariableDetails.TaskListVariableResponse taskListVariableResponse = new TaskListVariableDetails.TaskListVariableResponse();
-        taskListVariableResponse.setTaskDetails(getTask(taskId));
+        //taskListVariableResponse.setTaskDetails(getTask(taskId));
         taskListVariableResponse.jsonResponse = new JSONObject(taskListVariableResponse.getTaskDetails().getBody());
         taskListVariableResponse.setProcessDefinitionKey(taskListVariableResponse.jsonResponse.getString(PROCESSDEFINITIONKEY));
         taskListVariableResponse.setFormId(taskListVariableResponse.jsonResponse.getString(FORMID));

@@ -1,7 +1,9 @@
 package com.puresoftware.raymondJames.controllers;
 
 import com.puresoftware.raymondJames.implementation.TasklistApiImpl;
+import com.puresoftware.raymondJames.pojo.TaskListVariableDetails;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,8 +30,9 @@ public class TasklistApiController {
 
     /* Api for Get task details for provided taskid */
     @GetMapping("/getTaskDetails/{taskId}")
-    public ResponseEntity<String> getTask(@PathVariable String taskId) throws IOException {
-        return taskListApiImpl.getTask(taskId);
+    public TaskListVariableDetails.TaskListVariableResponse getTask(@PathVariable String taskId) {
+        TaskListVariableDetails.TaskListVariableResponse response = taskListApiImpl.getTask(taskId);
+        return ResponseEntity.ok().body(response).getBody();
     }
 
     /* Api for Get form details for provided taskid */
