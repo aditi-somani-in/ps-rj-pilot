@@ -4,6 +4,8 @@ import com.puresoftware.raymondJames.config.BearerTokenGeneratorConfig;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -15,7 +17,9 @@ import java.io.IOException;
  */
 
 @RestController
+@ControllerAdvice
 public class BearerTokenGenerateController {
+
     @Autowired
     BearerTokenGeneratorConfig bearerTokenGeneratorConfig;
 

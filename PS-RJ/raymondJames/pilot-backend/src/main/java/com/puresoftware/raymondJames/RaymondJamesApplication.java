@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.web.client.RestTemplate;
 
 @OpenAPIDefinition(info=@Info(title="Camunda APIs"))
+
 @SpringBootApplication
 public class RaymondJamesApplication {
 

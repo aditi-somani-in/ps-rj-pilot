@@ -14,6 +14,7 @@ import java.util.HashMap;
  */
 
 @RestController
+@ControllerAdvice
 @CrossOrigin(origins = "*") //Need to remove this before deploying this service
 @RequestMapping("/tasklistApi")
 public class TasklistApiController {

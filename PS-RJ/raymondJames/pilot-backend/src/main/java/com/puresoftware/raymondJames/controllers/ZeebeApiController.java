@@ -13,6 +13,7 @@ import com.puresoftware.raymondJames.implementation.ZeebeApiImpl;
  */
 
 @RestController
+@ControllerAdvice
 @CrossOrigin(origins = "*") //Need to remove this before deploying this service
 @RequestMapping("/zeebeApi")
 public class ZeebeApiController {
@@ -43,5 +44,9 @@ public class ZeebeApiController {
 	public ResponseEntity<String> completeZeebeTask(@PathVariable String taskId, @RequestBody String variableJson) throws IOException{
 		 return zeebeApiImpl.completeZeebeTask(taskId, variableJson);
 	}
-	
+
+	@Override
+	public int hashCode() {
+		return super.hashCode();
+	}
 }
