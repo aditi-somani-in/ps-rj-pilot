@@ -35,8 +35,8 @@ public class ZeebeApiController {
 
 	/* Api for unassign zeebe task to user for mentioned taskId */
 	@DeleteMapping("/un-assign/{taskId}")
-	public ZeebeVariableDetails.ZeebeVariablesResponse unAssignZeebeTask(@PathVariable String taskId, @RequestBody TaskListVariableDetails.TaskListVariableResponse taskListVariableResponse) throws IOException{
-		ZeebeVariableDetails.ZeebeVariablesResponse response = zeebeApiImpl.unAssignZeebeTask(taskId, taskListVariableResponse);
+	public ZeebeVariableDetails.ZeebeVariablesResponse unAssignZeebeTask(@PathVariable String taskId) throws IOException{
+		ZeebeVariableDetails.ZeebeVariablesResponse response = zeebeApiImpl.unAssignZeebeTask(taskId);
 		 return ResponseEntity.ok().body(response).getBody();
 	}
 

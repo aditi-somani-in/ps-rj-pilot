@@ -18,7 +18,9 @@ import org.springframework.web.client.RestTemplate;
 
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import static com.puresoftware.raymondJames.utils.GlobalUtils.GlobalZeebeUtils.*;
 
@@ -89,26 +91,32 @@ public class ZeebeApiImpl implements ZeebeApiService {
 	// Zeebe Api for UnAssign User Task
 	@Override
 	@SneakyThrows
-	public ZeebeVariableDetails.ZeebeVariablesResponse unAssignZeebeTask(String taskId, TaskListVariableDetails.TaskListVariableResponse taskListVariableResponse) {
+	public ZeebeVariableDetails.ZeebeVariablesResponse unAssignZeebeTask(String taskId) {
 
 		logger.debug("Service for UnAssign Zeebe User Task..!!");
 
 		ZeebeVariableDetails.ZeebeVariablesResponse zeebeVariablesResponse = new ZeebeVariableDetails.ZeebeVariablesResponse();
 		String unAssignZeebeTaskUrl = zeebeApiUrl + zeebeVersion + taskId + "/assignee";
-		/* TODO: My loop should not run twice and hence should be called once by the gettask method*/
-		zeebeVariablesResponse.setAssignee(tasklistApiImpl.getTask(taskId).getAssignee());
-		zeebeVariablesResponse.setTaskState(tasklistApiImpl.getTask(taskId).getTaskState());
+
+		TaskListVariableDetails.TaskListVariableResponse strings = tasklistApiImpl.getTask(taskId);
+
+		for(int i=0;i<strings.toString().length();i++){
+			zeebeVariablesResponse.setAssignee(strings.getAssignee());
+			zeebeVariablesResponse.setTaskState(strings.getTaskState());
+		}
+
 		HttpHeaders headers = headerConfig.addHeadersValue();
-		HttpEntity<String> entity = new HttpEntity(taskListVariableResponse, headers);
+		HttpEntity<String> entity = new HttpEntity(headers);
 		try {
-			if(zeebeVariablesResponse.getAssignee() != null) {
+
+			if (zeebeVariablesResponse.getAssignee() != null) {
 				ResponseEntity<String> response = restTemplate.exchange(unAssignZeebeTaskUrl, HttpMethod.DELETE, entity, String.class);
-			}else if (zeebeVariablesResponse.getTaskState().equals(COMPLETED_SUCCESSFULLY)) {
-				zeebeVariablesResponse.setMessage(COMPLETED_SUCCESSFULLY);
-			}else{
-				zeebeVariablesResponse.setMessage(COMPLETED);
 			}
-			return ResponseEntity.badRequest().body(zeebeVariablesResponse).getBody();
+			else if (zeebeVariablesResponse.getTaskState() != CREATED ) {
+				/*TODO: Need to include http status as bad request */
+				zeebeVariablesResponse.setMessage("Task id: "+taskId+ " has status " + zeebeVariablesResponse.getTaskState());
+			}
+
 		} catch (Exception ex) {
 			logger.error(ex.toString());
 			zeebeVariablesResponse.setMessage(ex.getMessage());

@@ -9,7 +9,7 @@ public interface ZeebeApiService {
 
     ResponseEntity<String> assignZeebeTask(String taskId, String variableJson);
 
-    ZeebeVariableDetails.ZeebeVariablesResponse unAssignZeebeTask(String taskId, TaskListVariableDetails.TaskListVariableResponse taskListVariableResponse);
+    ZeebeVariableDetails.ZeebeVariablesResponse unAssignZeebeTask(String taskId);
 
     ResponseEntity<String> updateZeebeTask(String taskId, String variableJson);
 

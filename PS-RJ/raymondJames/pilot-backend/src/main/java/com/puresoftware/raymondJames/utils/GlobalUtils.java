@@ -12,9 +12,11 @@ public class GlobalUtils {
     public static class GlobalZeebeUtils {
         public static final String ASSIGNEDSUCCESS ="Task Assigned successfully";
         public static final String ALREADY_ASSIGNED ="Task is Already Assigned to";
-        public static final String COMPLETED ="Task is Already Assigned or Completed";
+        public static final String COMPLETED_1 ="Task is Already Assigned or Completed";
         public static final String UN_ASSIGNED_SUCCESSFULLY ="Task UnAssigned successfully";
         public static final String UPDATED ="Task Updated successfully";
+        public static final String COMPLETED ="COMPLETE";
+        public static final String CREATED ="CREATED";
         public static final String COMPLETED_SUCCESSFULLY ="Task Completed successfully";
         public static final String ERROR ="Please check task is already completed or mentioned taskId is not correct";
     }
