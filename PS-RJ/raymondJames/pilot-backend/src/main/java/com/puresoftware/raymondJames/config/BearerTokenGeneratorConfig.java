@@ -17,8 +17,8 @@ import org.springframework.web.client.RestTemplate;
 import java.util.Collections;
 
 import static com.puresoftware.raymondJames.utils.BearerTokenUtils.*;
-import static com.puresoftware.raymondJames.utils.GlobalUtils.ACCESSTOKEN;
-import static com.puresoftware.raymondJames.utils.GlobalUtils.CONTENT_TYPE;
+import static com.puresoftware.raymondJames.utils.GlobalUtils.GlobalUtilHeaders.ACCESSTOKEN;
+import static com.puresoftware.raymondJames.utils.GlobalUtils.GlobalUtilHeaders.CONTENT_TYPE;
 
 @Service
 @Slf4j
