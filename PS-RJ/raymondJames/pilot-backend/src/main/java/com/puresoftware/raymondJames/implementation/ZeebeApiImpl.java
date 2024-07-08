@@ -63,10 +63,10 @@ public class ZeebeApiImpl implements ZeebeApiService {
 		HttpHeaders headers = headerConfig.addHeadersValue();
 		HttpEntity<String> entity = new HttpEntity(assignZeebeRequest, headers);
 
-		for (int i = 0; i < assignZeebeRequest.getAssignee().length(); i++){
+	//	for (int i = 0; i < assignZeebeRequest.getAssignee().length(); i++){
 
 			zeebeTaskResponse.setAssignee(assignZeebeRequest.getAssignee());
-		}
+		//}
 
 		try {
 

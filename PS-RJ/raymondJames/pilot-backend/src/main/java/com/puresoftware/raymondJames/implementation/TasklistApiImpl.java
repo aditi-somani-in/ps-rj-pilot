@@ -3,6 +3,9 @@ package com.puresoftware.raymondJames.implementation;
 import com.puresoftware.raymondJames.pojo.TaskListVariableDetails;
 import com.puresoftware.raymondJames.service.TasklistApiService;
 import com.puresoftware.raymondJames.config.HeaderConfig;
+import com.sun.net.httpserver.Authenticator;
+import io.camunda.zeebe.client.ZeebeClient;
+import io.camunda.zeebe.client.api.response.ProcessInstanceEvent;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
@@ -17,6 +20,7 @@ import org.springframework.web.client.RestTemplate;
 import java.util.HashMap;
 
 import static com.puresoftware.raymondJames.utils.GlobalUtils.GlobalTasklistUtils.*;
+import static com.puresoftware.raymondJames.utils.GlobalUtils.GlobalZeebeUtils.SUCCESS;
 
 @Service
 @Slf4j
@@ -43,6 +47,9 @@ public class TasklistApiImpl implements TasklistApiService {
 
     @Autowired
     private HeaderConfig headerConfig;
+
+    @Autowired
+    ZeebeClient zeebeClient;
 
     /*TODO: Need to check if rest template are required*/
 
@@ -92,7 +99,7 @@ public class TasklistApiImpl implements TasklistApiService {
         HashMap<String, Object> map = new HashMap<>();
         map.put("taskDetails", taskListVariableResponse.getTaskDetails().getBody());
         map.put("formDetails", response.getBody());
-        System.out.println(map);
+        logger.info(map.toString());
         return map;
     }
 
@@ -101,6 +108,7 @@ public class TasklistApiImpl implements TasklistApiService {
     @SneakyThrows
     public ResponseEntity<String> searchTask(String requestBody) {
         logger.debug("Service for Search A TASK FROM TASKLIST invoked..!!");
+        TaskListVariableDetails.TaskListVariableResponse taskListVariableResponse = new TaskListVariableDetails.TaskListVariableResponse();
         HttpHeaders headers = headerConfig.addHeadersValue();
         HttpEntity<String> httpEntity = new HttpEntity(requestBody, headers);
         ResponseEntity<String> response = null;
@@ -108,8 +116,9 @@ public class TasklistApiImpl implements TasklistApiService {
             response = restTemplate.exchange(taskSearchUrl, HttpMethod.POST, httpEntity, String.class);
         }catch(Exception ex){
             logger.error(ex.toString());
+            taskListVariableResponse.setMessage(ex.getMessage());
         }
-        return response;
+        return new ResponseEntity<>(response.toString(), HttpStatus.OK);
     }
 
     //For get variable Search from tasklist
@@ -156,5 +165,41 @@ public class TasklistApiImpl implements TasklistApiService {
         taskListVariableResponse.setMessage(DRAFTVARIABLE);
         //responseObj = responseConfig.ResponseOutput(taskListVariableResponse.jsonResponse, response, "TransactionId", taskListVariableResponse.getMessage());
         return response;
+    }
+
+    @Override
+    @SneakyThrows
+    public TaskListVariableDetails.TaskListVariableResponse startProcessInstance(String requestBody){
+        TaskListVariableDetails.TaskListVariableResponse taskListResponse = new TaskListVariableDetails.TaskListVariableResponse();
+        try {
+            zeebeClient
+                    .newCreateInstanceCommand()
+                    .bpmnProcessId("Process_0pukv4e")
+                    .latestVersion()
+                    .send()
+                    .join();
+        }catch(Exception ex){
+            logger.error(ex.getMessage());
+            taskListResponse.setMessage(ex.getMessage());
+        }
+        taskListResponse.setMessage(SUCCESS);
+        return taskListResponse;
+    }
+
+    @Override
+    @SneakyThrows
+    public TaskListVariableDetails.TaskListVariableResponse deployProcess(String requestBody) {
+        TaskListVariableDetails.TaskListVariableResponse taskListResponse = new TaskListVariableDetails.TaskListVariableResponse();
+        try{
+            zeebeClient.newDeployResourceCommand()
+                    .addResourceFromClasspath(PROCESSNAME)
+                    .send()
+                    .join();
+        }catch(Exception ex){
+            logger.error(ex.getMessage());
+            taskListResponse.setMessage(ex.getMessage());
+        }
+        taskListResponse.setMessage(SUCCESS);
+        return taskListResponse;
     }
 }

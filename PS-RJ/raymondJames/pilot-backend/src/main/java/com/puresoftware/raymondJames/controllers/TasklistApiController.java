@@ -2,6 +2,7 @@ package com.puresoftware.raymondJames.controllers;
 
 import com.puresoftware.raymondJames.implementation.TasklistApiImpl;
 import com.puresoftware.raymondJames.pojo.TaskListVariableDetails;
+import io.camunda.zeebe.client.ZeebeClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -63,6 +64,18 @@ public class TasklistApiController {
     @PostMapping("/DraftVariable/{taskId}")
     public ResponseEntity<String> DraftVariable(@PathVariable String taskId, @RequestBody String requestBody) throws  IOException{
         return taskListApiImpl.draftVariable(taskId, requestBody);
+    }
+
+    /* Api for Get all tasks from the tasklist */
+    @PostMapping("/startProcessInstance")
+    public TaskListVariableDetails.TaskListVariableResponse startProcessInstance(@RequestBody String requestBody) throws  IOException{
+        return taskListApiImpl.startProcessInstance(requestBody);
+    }
+
+    /* Api for Get all tasks from the tasklist */
+    @PostMapping("/deployProcess")
+    public TaskListVariableDetails.TaskListVariableResponse deployProcess(@RequestBody String requestBody) throws  IOException{
+        return taskListApiImpl.deployProcess(requestBody);
     }
 }
 

@@ -28,6 +28,7 @@ public class GlobalUtils {
         public static final String ERRORINDRAFTVARIABLE="Error in draft variables";
         public static final String ERRORINVARIABLESEARCH="Error in variable search";
         public static final String VARIABLESEARCHDONE="Variable search is Done";
+        public static final String PROCESSNAME="diagram_1.bpmn";
     }
     }
 

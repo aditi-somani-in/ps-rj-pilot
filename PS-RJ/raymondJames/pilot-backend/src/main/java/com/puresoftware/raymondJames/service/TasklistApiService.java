@@ -1,5 +1,7 @@
 package com.puresoftware.raymondJames.service;
 
+import com.puresoftware.raymondJames.pojo.TaskListVariableDetails;
+import io.camunda.zeebe.client.ZeebeClient;
 import org.springframework.http.ResponseEntity;
 
 import java.io.IOException;
@@ -17,4 +19,7 @@ public interface TasklistApiService {
 
     ResponseEntity<String> draftVariable(String taskId, String requestBody);
 
+    TaskListVariableDetails.TaskListVariableResponse startProcessInstance(String requestBody);
+
+    TaskListVariableDetails.TaskListVariableResponse deployProcess(String requestBody);
 }
